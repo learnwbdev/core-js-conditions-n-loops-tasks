@@ -378,8 +378,69 @@ function getBalanceIndex(arr) {
  *          [10, 9,  8,  7]
  *        ]
  */
-function getSpiralMatrix(/* size */) {
-  throw new Error('Not implemented');
+function getSpiralMatrix(size) {
+  const createZeroSquareMatrix = (matrixSize) => {
+    const zeroSquareMatrix = [];
+    for (let i = 0; i < matrixSize; i += 1) {
+      const matrixRow = [];
+      for (let j = 0; j < matrixSize; j += 1) {
+        matrixRow[j] = 0;
+      }
+      zeroSquareMatrix[i] = matrixRow;
+    }
+    return zeroSquareMatrix;
+  };
+
+  const dirMoveRght = [1, 0];
+  const dirMoveLeft = [-1, 0];
+  const dirMoveDown = [0, 1];
+  const dirMoveUp = [0, -1];
+  const isMoveRight = (deltaForCol) => {
+    return deltaForCol === dirMoveRght[0];
+  };
+  const isMoveLeft = (deltaForCol) => {
+    return deltaForCol === dirMoveLeft[0];
+  };
+  const isMoveDown = (deltaForRow) => {
+    return deltaForRow === dirMoveDown[1];
+  };
+  const isMoveUp = (deltaForRow) => {
+    return deltaForRow === dirMoveUp[1];
+  };
+
+  const isReachWall = (idxWall, idxCur) => {
+    return idxCur === idxWall;
+  };
+
+  const spiralMatrix = createZeroSquareMatrix(size);
+  let curNumber = 1;
+  let leftWall = 0;
+  let rghtWall = size - 1;
+  let topWall = 0;
+  let btmWall = size - 1;
+  let idxRow = topWall;
+  let idxCol = leftWall;
+  let [deltaCol, deltaRow] = dirMoveRght;
+  while (rghtWall >= leftWall && btmWall >= topWall) {
+    spiralMatrix[idxRow][idxCol] = curNumber;
+    curNumber += 1;
+    if (isMoveRight(deltaCol) && isReachWall(rghtWall, idxCol)) {
+      [deltaCol, deltaRow] = dirMoveDown;
+      topWall += 1;
+    } else if (isMoveDown(deltaRow) && isReachWall(btmWall, idxRow)) {
+      [deltaCol, deltaRow] = dirMoveLeft;
+      rghtWall -= 1;
+    } else if (isMoveLeft(deltaCol) && isReachWall(leftWall, idxCol)) {
+      [deltaCol, deltaRow] = dirMoveUp;
+      btmWall -= 1;
+    } else if (isMoveUp(deltaRow) && isReachWall(topWall, idxRow)) {
+      [deltaCol, deltaRow] = dirMoveRght;
+      leftWall += 1;
+    }
+    idxRow += deltaRow;
+    idxCol += deltaCol;
+  }
+  return spiralMatrix;
 }
 
 /**
