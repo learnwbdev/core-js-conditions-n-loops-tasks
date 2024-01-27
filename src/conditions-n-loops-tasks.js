@@ -459,22 +459,34 @@ function getSpiralMatrix(size) {
  *  ]                 ]
  */
 function rotateMatrix(matrix) {
+  const transposeMatrix = (matrixOriginalRef) => {
+    const matrixTrans = matrixOriginalRef;
+    const matrixSize = matrixTrans.length;
+    for (let iRow = 1; iRow < matrixSize; iRow += 1) {
+      for (let jCol = 0; jCol < iRow; jCol += 1) {
+        const valBuffer = matrixTrans[iRow][jCol];
+        matrixTrans[iRow][jCol] = matrixTrans[jCol][iRow];
+        matrixTrans[jCol][iRow] = valBuffer;
+      }
+    }
+  };
+
+  const swapMatrixColumns = (matrixTransposedRef) => {
+    const matrixSwapCol = matrixTransposedRef;
+    const matrixSize = matrixSwapCol.length;
+    const numColToCenter = (matrixSize - (matrixSize % 2)) / 2;
+    for (let jCol = 0; jCol < numColToCenter; jCol += 1) {
+      for (let iRow = 0; iRow < matrixSize; iRow += 1) {
+        const valBuffer = matrixSwapCol[iRow][jCol];
+        matrixSwapCol[iRow][jCol] = matrixSwapCol[iRow][matrixSize - 1 - jCol];
+        matrixSwapCol[iRow][matrixSize - 1 - jCol] = valBuffer;
+      }
+    }
+  };
+
   const matrixRotated = matrix;
-  const numRows = matrix.length;
-  const numCols = matrix[0] ? matrix[0].length : 0;
-  const copyOriginalMatrix = [];
-  for (let i = 0; i < numRows; i += 1) {
-    const curRow = [];
-    for (let j = 0; j < numCols; j += 1) {
-      curRow[j] = matrix[i][j];
-    }
-    copyOriginalMatrix[i] = curRow;
-  }
-  for (let j = 0; j < numCols; j += 1) {
-    for (let i = numRows - 1; i >= 0; i -= 1) {
-      matrixRotated[j][numRows - 1 - i] = copyOriginalMatrix[i][j];
-    }
-  }
+  transposeMatrix(matrixRotated);
+  swapMatrixColumns(matrixRotated);
   return matrixRotated;
 }
 
