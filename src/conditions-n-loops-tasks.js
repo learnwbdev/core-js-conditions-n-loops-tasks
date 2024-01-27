@@ -335,14 +335,20 @@ function getBalanceIndex(arr) {
     sumAllArray += arr[i];
   }
 
+  const isBalanceIdxNotZero = (balanceIdx) => {
+    return balanceIdx !== 0;
+  };
+
   let curPos = 0;
   let sumLeft = 0;
   let sumRight = sumAllArray;
   while (!isBalancePoint && curPos < arr.length) {
     sumRight -= arr[curPos];
     if (sumLeft === sumRight) {
-      isBalancePoint = true;
       idxBalancePoint = curPos;
+      if (isBalanceIdxNotZero(idxBalancePoint)) {
+        isBalancePoint = true;
+      }
     }
     sumLeft += arr[curPos];
     curPos += 1;
