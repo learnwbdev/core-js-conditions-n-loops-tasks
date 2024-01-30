@@ -504,8 +504,62 @@ function rotateMatrix(matrix) {
  *  [2, 9, 5, 9]    => [2, 5, 9, 9]
  *  [-2, 9, 5, -3]  => [-3, -2, 5, 9]
  */
-function sortByAsc(/* arr */) {
-  throw new Error('Not implemented');
+function sortByAsc(arr) {
+  if (arr.length <= 1) {
+    return arr;
+  }
+  const swapElemVals = (arrayToSort, idx1, idx2) => {
+    const arrRef = arrayToSort;
+    if (idx1 === idx2 || arrRef[idx1] === arrRef[idx2]) {
+      return;
+    }
+    const buffer = arrRef[idx1];
+    arrRef[idx1] = arrRef[idx2];
+    arrRef[idx2] = buffer;
+  };
+  const getIndicesPivotLeftRght = (
+    arrayToSort,
+    pivotVal,
+    leftEndIdx,
+    rghtEndIdx
+  ) => {
+    const arrRef = arrayToSort;
+    let leftPivotPnt = leftEndIdx;
+    let rghtPivotPnt = leftEndIdx;
+    let upperPointer = rghtEndIdx;
+    while (rghtPivotPnt <= upperPointer) {
+      const curRghtElem = arrRef[rghtPivotPnt];
+      if (curRghtElem < pivotVal) {
+        swapElemVals(arrRef, rghtPivotPnt, leftPivotPnt);
+        leftPivotPnt += 1;
+        rghtPivotPnt += 1;
+      } else if (curRghtElem > pivotVal) {
+        swapElemVals(arrRef, rghtPivotPnt, upperPointer);
+        upperPointer -= 1;
+      } else {
+        rghtPivotPnt += 1;
+      }
+    }
+    return [leftPivotPnt, rghtPivotPnt];
+  };
+  const quickSort = (arrayToSort, leftEndIdx, rghtEndIdx) => {
+    if (leftEndIdx >= rghtEndIdx) {
+      return;
+    }
+    const arrRef = arrayToSort;
+    const pivotVal = arrRef[rghtEndIdx];
+    const [leftPivotPnt, rghtPivotPnt] = getIndicesPivotLeftRght(
+      arrRef,
+      pivotVal,
+      leftEndIdx,
+      rghtEndIdx
+    );
+    quickSort(arrRef, leftEndIdx, leftPivotPnt - 1);
+    quickSort(arrRef, rghtPivotPnt, rghtEndIdx);
+  };
+
+  quickSort(arr, 0, arr.length - 1);
+  return arr;
 }
 
 /**
