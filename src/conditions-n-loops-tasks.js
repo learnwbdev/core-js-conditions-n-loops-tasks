@@ -579,8 +579,85 @@ function sortByAsc(arr) {
  *  '012345', 3 => '024135' => '043215' => '031425'
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
-function shuffleChar(/* str, iterations */) {
-  throw new Error('Not implemented');
+function shuffleChar(str, iterations) {
+  const getCycleReplacements = (stringArr) => {
+    const strLength = stringArr.length;
+    const oddShift = strLength - Math.floor(strLength / 2);
+    const getReplacementIdx = (curIdx) => {
+      return curIdx < oddShift ? curIdx * 2 : (curIdx - oddShift) * 2 + 1;
+    };
+
+    const arrCycles = [];
+    let maxCycleSize = 0;
+    const replacedInds = new Set();
+    let arrIdx = 0;
+    let startIdx = strLength - 1;
+    let maxIdxReplaced = startIdx;
+    while (replacedInds.size < strLength - 1) {
+      let curIdx = startIdx;
+      let newValueIdx = getReplacementIdx(curIdx);
+      const replCycle = [];
+      let cycleIdx = 0;
+      while (newValueIdx !== startIdx) {
+        replacedInds.add(curIdx);
+        replCycle[cycleIdx] = curIdx;
+        curIdx = newValueIdx;
+        newValueIdx = getReplacementIdx(curIdx);
+        cycleIdx += 1;
+      }
+      replacedInds.add(curIdx);
+      replCycle[cycleIdx] = curIdx;
+      arrCycles[arrIdx] = replCycle;
+      const curCycleSize = replCycle.length;
+      maxCycleSize = curCycleSize > maxCycleSize ? curCycleSize : maxCycleSize;
+
+      if (replacedInds.size === strLength - 1) {
+        break;
+      }
+      startIdx = maxIdxReplaced - 1;
+      while (replacedInds.has(startIdx) && startIdx >= 0) {
+        startIdx -= 1;
+      }
+      maxIdxReplaced = startIdx;
+      arrIdx += 1;
+    }
+
+    return [arrCycles, maxCycleSize];
+  };
+
+  const shuffleOnce = (stringSplitInArray, arrCycles) => {
+    const stringArr = stringSplitInArray;
+    for (let i = 0; i < arrCycles.length; i += 1) {
+      const replCycle = arrCycles[i];
+      let j = 0;
+      let curIdx = replCycle[j];
+      const bufferVal = stringArr[curIdx];
+      for (j = 1; j < replCycle.length; j += 1) {
+        const replIdx = replCycle[j];
+        stringArr[curIdx] = stringArr[replIdx];
+        curIdx = replIdx;
+      }
+      stringArr[curIdx] = bufferVal;
+    }
+
+    return stringArr;
+  };
+
+  let stringArr = str.split('');
+  const [arrCycles, maxCycleSize] = getCycleReplacements(stringArr);
+  const iterationsToDo = iterations % maxCycleSize;
+  for (let i = 0; i < iterationsToDo; i += 1) {
+    stringArr = shuffleOnce(stringArr, arrCycles);
+  }
+
+  let shuffledStr = '';
+  let i = 0;
+  while (i < stringArr.length) {
+    shuffledStr += stringArr[i];
+    i += 1;
+  }
+
+  return shuffledStr;
 }
 
 /**
