@@ -677,8 +677,69 @@ function shuffleChar(str, iterations) {
  * @param {number} number The source number
  * @returns {number} The nearest larger number, or original number if none exists.
  */
-function getNearestBigger(/* number */) {
-  throw new Error('Not implemented');
+function getNearestBigger(number) {
+  if (number < 10) {
+    return number;
+  }
+  const numberToDigitsArr = (numberToParse) => {
+    const digits = [];
+    let remainder = numberToParse;
+    let arrIdx = 0;
+    const base = 10;
+    while (remainder >= base) {
+      const digit = remainder % base;
+      digits[arrIdx] = digit;
+      remainder = (remainder - digit) / base;
+      arrIdx += 1;
+    }
+    digits[arrIdx] = remainder;
+    return digits;
+  };
+  const getIdxDigitToChange = (digitsArr) => {
+    let i = 1;
+    let maxPrevDigits = digitsArr[0];
+    let idxMaxPrevDigit = 0;
+    while (i < digitsArr.length && digitsArr[i] >= maxPrevDigits) {
+      if (digitsArr[i] > maxPrevDigits) {
+        maxPrevDigits = digitsArr[i];
+        idxMaxPrevDigit = i;
+      }
+      i += 1;
+    }
+    const idxDigitToChange = i === digitsArr.length ? -1 : i;
+    return [idxDigitToChange, idxMaxPrevDigit];
+  };
+  const replaceDigitToChange = (digitsArr, idxToChange, idxMaxPrev) => {
+    const digits = digitsArr;
+    const digitToChange = digits[idxToChange];
+    let idxToNewDigit = idxMaxPrev;
+    for (let j = 0; j < idxToChange; j += 1) {
+      if (digits[j] < digits[idxToNewDigit] && digits[j] > digitToChange) {
+        idxToNewDigit = j;
+      }
+    }
+    digits[idxToChange] = digits[idxToNewDigit];
+    digits[idxToNewDigit] = digitToChange;
+    return digits;
+  };
+  const digits = numberToDigitsArr(number);
+  const [idxToChange, idxMaxPrev] = getIdxDigitToChange(digits);
+  const isNoLargest = idxToChange === -1;
+  if (isNoLargest) {
+    return number;
+  }
+  replaceDigitToChange(digits, idxToChange, idxMaxPrev);
+  const digitsUnchanged = digits.filter((_, idx) => idx >= idxToChange);
+  const digitsToSort = digits.filter((_, idx) => idx < idxToChange);
+  digitsToSort.sort((a, b) => b - a);
+  const newNumberDigits = [...digitsToSort, ...digitsUnchanged];
+  let newNumber = 0;
+  const base = 10;
+  for (let i = 0; i < newNumberDigits.length; i += 1) {
+    newNumber += newNumberDigits[i] * base ** i;
+  }
+
+  return newNumber;
 }
 
 module.exports = {
